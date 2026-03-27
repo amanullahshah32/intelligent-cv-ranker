@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resume Ranking Results</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+    <style>
+      /* Header styling */
+      .header-bar {
+        background-color: #0d6efd;
+        color: white;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .header-bar h1 {
+        font-size: 1.75rem;
+        margin: 0;
+        display: flex;
+        align-items: center;
+      }
+
+      /* Job description box */
+      .job-description-box {
+        background-color: #d1ecf1;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 20px;
+      }
+
+      /* Table styles */
+      .table-header {
+        background-color: #343a40;
+        color: white;
+      }
+
+      /* Badge styles */
+      .rank-badge {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #0d6efd;
+        color: white;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        font-weight: bold;
+        margin: 0 auto;
+      }
+
+      /* Skill badges */
+      .skill-badge {
+        display: inline-block;
+        background-color: #0d6efd;
+        color: white;
+        border-radius: 20px;
+        padding: 3px 10px;
+        margin: 2px;
+        font-size: 0.8rem;
+      }
+
+      .more-badge {
+        background-color: #6c757d;
+        color: white;
+      }
+
+      /* Detail button */
+      .detail-button {
+        border-radius: 50px;
+        padding: 3px 15px;
+      }
+
+      /* Modal styling */
+      .modal-header {
+        background-color: #0d6efd;
+        color: white;
+      }
+
+      .info-section-title {
+        font-weight: bold;
+        margin-bottom: 10px;
+        border-bottom: 2px solid #0d6efd;
+        padding-bottom: 5px;
+      }
+
+      .detail-box {
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 15px;
+      }
+
+      .cert-badge {
+        background-color: #198754;
+        color: white;
+        border-radius: 20px;
+        padding: 5px 10px;
+        margin: 2px;
+        display: inline-block;
+      }
+
+      .feedback-section {
+        background-color: #e8f4ff;
+        border-left: 5px solid #0d6efd;
+        padding: 15px;
+        margin-top: 15px;
+        border-radius: 5px;
+      }
+
+      .feedback-title {
+        font-weight: bold;
+        color: #0d6efd;
+        margin-bottom: 8px;
+      }
+
+      .similarity-meter {
+        height: 10px;
+        border-radius: 5px;
+        background-color: #e9ecef;
+        margin: 5px 0;
+        overflow: hidden;
+        width: 100%;
+      }
+
+      .similarity-fill {
+        height: 100%;
+        background-color: #0d6efd;
+      }
+
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #eee;
+      }
+
+      .info-row:last-child {
+        border-bottom: none;
+      }
+
+      .info-label {
+        font-weight: 500;
+      }
+
+      .info-value {
+        text-align: right;
+      }
+
+      .candidate-feedback {
+        background-color: #e9f7ef;
+        border-left: 5px solid #28a745;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header-bar">
+      <h1>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="currentColor"
+          class="bi bi-list"
+          viewBox="0 0 16 16"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"
+          />
+        </svg>
+        Resume Ranking Results
+      </h1>
+      <a href="/" class="btn btn-light">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          fill="currentColor"
+          class="bi bi-arrow-left"
+          viewBox="0 0 16 16"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"
+          />
+        </svg>
+        New Analysis
+      </a>
+    </div>
+
+    <div class="container">
+      <!-- Job Description -->
+      <div class="job-description-box">
+        <h5>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            fill="currentColor"
+            class="bi bi-briefcase"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M6.5 1A1.5 1.5 0 0 0 5 2.5V3H1.5A1.5 1.5 0 0 0 0 4.5v8A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 14.5 3H11v-.5A1.5 1.5 0 0 0 9.5 1h-3zm0 1h3a.5.5 0 0 1 .5.5V3H6v-.5a.5.5 0 0 1 .5-.5zm1.886 6.914L15 7.151V12.5a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5V7.15l6.614 1.764a1.5 1.5 0 0 0 .772 0zM1.5 4h13a.5.5 0 0 1 .5.5v1.616L8.129 7.948a.5.5 0 0 1-.258 0L1 6.116V4.5a.5.5 0 0 1 .5-.5z"
+            />
+          </svg>
+          Job Description Used:
+        </h5>
+        <p>{{ job_description }}</p>
+      </div>
+
+      <!-- Results Table -->
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead class="table-header">
+            <tr>
+              <th>Rank</th>
+              <th>File Name</th>
+              <th>CV Category</th>
+              <th>Education</th>
+              <th>Experience</th>
+              <th>Skills</th>
+              <th>Projects</th>
+              <th>Score</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for result in results %}
+            <tr>
+              <td>
+                <div class="rank-badge">{{ result.rank }}</div>
+              </td>
+              <td>{{ result.file_name }}</td>
+              <td>
+                <span class="badge bg-info">{{ result.cv_category }}</span>
+              </td>
+              <td>{{ result.education }}</td>
+              <td>{{ result.experience_years }} years</td>
+              <td>
+                {% if result.detected_skills %} {% for skill in
+                result.detected_skills[:3] %}
+                <span class="skill-badge">{{ skill }}</span>
+                {% endfor %} {% if result.detected_skills|length > 3 %}
+                <span class="skill-badge more-badge"
+                  >+{{ result.detected_skills|length - 3 }}</span
+                >
+                {% endif %} {% else %}
+                <span class="text-muted">{{ result.skills|default('0') }}</span>
+                {% endif %}
+              </td>
+              <td>{{ result.projects }}</td>
+              <td>{{ "%.2f"|format(result.total_score) }}</td>
+              <td>
+                <button
+                  class="btn btn-primary btn-sm detail-button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#detailsModal{{ loop.index }}"
+                >
+                  Details
+                </button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Details Modals -->
+      {% for result in results %}
+      <div
+        class="modal fade"
+        id="detailsModal{{ loop.index }}"
+        tabindex="-1"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">
+                Candidate Details: {{ result.file_name }}
+              </h5>
+              <button
+                type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <!-- Basic Information -->
+              <div class="row mb-4">
+                <div class="col-md-6">
+                  <h6 class="info-section-title">Basic Information</h6>
+                  <div class="detail-box">
+                    <div class="info-row">
+                      <div class="info-label">Rank</div>
+                      <div class="info-value">
+                        <span class="badge bg-primary">{{ result.rank }}</span>
+                      </div>
+                    </div>
+                    <div class="info-row">
+                      <div class="info-label">CV Category</div>
+                      <div class="info-value">{{ result.cv_category }}</div>
+                    </div>
+                    <div class="info-row">
+                      <div class="info-label">Education</div>
+                      <div class="info-value">{{ result.education }}</div>
+                    </div>
+                    <div class="info-row">
+                      <div class="info-label">Experience</div>
+                      <div class="info-value">
+                        {{ result.experience_years }} years
+                      </div>
+                    </div>
+                    <div class="info-row">
+                      <div class="info-label">Total Score</div>
+                      <div class="info-value">
+                        {{ "%.2f"|format(result.total_score) }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Qualifications -->
+                <div class="col-md-6">
+                  <h6 class="info-section-title">Qualifications</h6>
+                  <div class="detail-box">
+                    <div class="info-row">
+                      <div class="info-label">Education Score</div>
+                      <div class="info-value">{{ result.education_score }}</div>
+                    </div>
+                    <div class="info-row">
+                      <div class="info-label">Experience Score</div>
+                      <div class="info-value">
+                        {{ result.experience_score }}
+                      </div>
+                    </div>
+                    <div class="info-row">
+                      <div class="info-label">Skill Score</div>
+                      <div class="info-value">{{ result.skill_score }}</div>
+                    </div>
+                    <div class="info-row">
+                      <div class="info-label">JD Match</div>
+                      <div class="info-value">
+                        <div class="similarity-meter">
+                          <div
+                            class="similarity-fill"
+                            style="width: {{ (result.jd_similarity * 100)|int }}%"
+                          ></div>
+                        </div>
+                        {{ "%.0f"|format(result.jd_similarity * 100) }}%
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Skills -->
+              <h6 class="info-section-title">Skills</h6>
+              <div class="detail-box">
+                {% for skill in result.detected_skills %}
+                <span class="skill-badge">{{ skill }}</span>
+                {% endfor %}
+              </div>
+
+              <!-- HR Feedback -->
+              {% if result.hr_feedback %}
+              <h6 class="info-section-title">HR Feedback</h6>
+              <div class="feedback-section">
+                <p>{{ result.hr_feedback }}</p>
+              </div>
+              {% endif %}
+
+              <!-- Job Seeker Feedback -->
+              {% if result.job_seeker_feedback %}
+              <h6 class="info-section-title">
+                Candidate Improvement Suggestions
+              </h6>
+              <div class="feedback-section candidate-feedback">
+                <p>{{ result.job_seeker_feedback }}</p>
+              </div>
+              {% endif %}
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+      <div class="mt-4 mb-5">
+        <a href="/" class="btn btn-primary">Back to Home</a>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

@@ -1,0 +1,310 @@
+{% extends 'base.html' %} {% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-10">
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white">
+        <h2 class="mb-0">
+          <i class="fas fa-briefcase me-2"></i>Resume Matching System
+        </h2>
+      </div>
+      <div class="card-body">
+        <div class="row mb-4">
+          <div class="col-md-12">
+            <h4>Match Resumes to Job Description</h4>
+            <p class="text-muted">
+              Upload CV files (PDF, Scanned PDF, DOCX, TXT) and enter a job
+              description to find the best matches using our advanced NLP
+              algorithm.
+            </p>
+          </div>
+        </div>
+
+        <form
+          action="{{ url_for('upload_files') }}"
+          method="post"
+          enctype="multipart/form-data"
+          id="uploadForm"
+        >
+          <div class="mb-4">
+            <label for="job_description" class="form-label fw-bold">
+              <i class="fas fa-tasks me-2"></i>Job Description
+            </label>
+            <textarea
+              class="form-control"
+              id="job_description"
+              name="job_description"
+              rows="6"
+              required
+              placeholder="Enter the complete job description here..."
+            ></textarea>
+            <div class="form-text">
+              Detailed job descriptions provide more accurate matching results.
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-bold">
+              <i class="fas fa-file-upload me-2"></i>Upload CVs
+            </label>
+
+            <!-- Upload type toggle -->
+            <div class="mb-3">
+              <div class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="uploadType"
+                  id="filesUpload"
+                  value="files"
+                  checked
+                />
+                <label class="form-check-label" for="filesUpload"
+                  >Select Files</label
+                >
+              </div>
+              <div class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="uploadType"
+                  id="folderUpload"
+                  value="folder"
+                />
+                <label class="form-check-label" for="folderUpload"
+                  >Select Folders</label
+                >
+              </div>
+            </div>
+
+            <!-- File upload input -->
+            <div id="fileUploadContainer">
+              <input
+                class="form-control"
+                type="file"
+                id="cvs"
+                name="cvs"
+                multiple
+                accept=".pdf,.docx,.txt"
+              />
+              <div class="form-text">
+                Upload multiple CV files (PDF, Scanned PDF, DOCX, TXT formats
+                supported).
+              </div>
+            </div>
+
+            <!-- Folder upload input -->
+            <div id="folderUploadContainer" style="display: none">
+              <input
+                class="form-control"
+                type="file"
+                id="folders"
+                name="folders"
+                webkitdirectory
+                directory
+                multiple
+              />
+              <div class="form-text">
+                Upload folders containing CV files. The folder name will be used
+                as the category.
+              </div>
+            </div>
+
+            <!-- Hidden field to track upload type -->
+            <input
+              type="hidden"
+              name="uploadTypeHidden"
+              id="uploadTypeHidden"
+              value="files"
+            />
+          </div>
+
+          <!-- File preview section -->
+          <div class="mb-4" id="uploadPreview">
+            <p class="text-center">
+              <strong>Selected files:</strong> <span id="fileCount">0</span>
+            </p>
+
+            <!-- Files table with headers -->
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th width="10%">Type</th>
+                    <th>File Name</th>
+                    <th width="10%">Skills</th>
+                    <th width="10%">Size</th>
+                  </tr>
+                </thead>
+                <tbody id="fileList">
+                  <!-- Files will be listed here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+              <i class="fas fa-search me-2"></i>Analyze and Rank Resumes
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="card-footer bg-light">
+        <div class="row">
+          <div class="col-md-4 text-center">
+            <i class="fas fa-tachometer-alt fa-2x text-primary mb-2"></i>
+            <h5>Fast Processing</h5>
+            <p class="small">
+              Advanced algorithms quickly analyze multiple CVs
+            </p>
+          </div>
+          <div class="col-md-4 text-center">
+            <i class="fas fa-brain fa-2x text-primary mb-2"></i>
+            <h5>Intelligent Matching</h5>
+            <p class="small">NLP techniques for accurate candidate ranking</p>
+          </div>
+          <div class="col-md-4 text-center">
+            <i class="fas fa-chart-bar fa-2x text-primary mb-2"></i>
+            <h5>Detailed Insights</h5>
+            <p class="small">Comprehensive feedback on each candidate</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block scripts %}
+<script>
+  // Toggle between file and folder upload
+  document.querySelectorAll('input[name="uploadType"]').forEach((radio) => {
+    radio.addEventListener("change", function () {
+      if (this.value === "files") {
+        document.getElementById("fileUploadContainer").style.display = "block";
+        document.getElementById("folderUploadContainer").style.display = "none";
+        document.getElementById("uploadTypeHidden").value = "files";
+      } else {
+        document.getElementById("fileUploadContainer").style.display = "none";
+        document.getElementById("folderUploadContainer").style.display =
+          "block";
+        document.getElementById("uploadTypeHidden").value = "folders";
+      }
+
+      // Clear previous selections
+      document.getElementById("fileCount").textContent = "0";
+      document.getElementById("fileList").innerHTML = "";
+    });
+  });
+
+  // Handle file selection for both regular files and folders
+  document
+    .getElementById("cvs")
+    .addEventListener("change", handleFileSelection);
+  document
+    .getElementById("folders")
+    .addEventListener("change", handleFileSelection);
+
+  function handleFileSelection(e) {
+    const fileList = document.getElementById("fileList");
+    const fileCount = document.getElementById("fileCount");
+
+    // Clear previous list
+    fileList.innerHTML = "";
+
+    // Display selected files
+    if (this.files.length > 0) {
+      fileCount.textContent = this.files.length;
+
+      // Group files by folder for folder upload
+      const folderGroups = {};
+
+      for (let i = 0; i < this.files.length; i++) {
+        const file = this.files[i];
+
+        // Get file icon based on type
+        let fileIcon;
+        let fileType;
+
+        if (file.name.toLowerCase().endsWith(".pdf")) {
+          fileIcon = '<i class="fas fa-file-pdf text-danger"></i>';
+          fileType = "PDF";
+        } else if (file.name.toLowerCase().endsWith(".docx")) {
+          fileIcon = '<i class="fas fa-file-word text-primary"></i>';
+          fileType = "DOCX";
+        } else if (file.name.toLowerCase().endsWith(".txt")) {
+          fileIcon = '<i class="fas fa-file-alt text-secondary"></i>';
+          fileType = "TXT";
+        } else {
+          fileIcon = '<i class="fas fa-file"></i>';
+          fileType = "File";
+        }
+
+        // For folder uploads, organize by folder
+        if (this.webkitdirectory) {
+          const pathParts = file.webkitRelativePath.split("/");
+          if (pathParts.length > 1) {
+            const folderName = pathParts[0];
+
+            // Store files by folder
+            if (!folderGroups[folderName]) {
+              folderGroups[folderName] = [];
+            }
+            folderGroups[folderName].push({
+              name: file.name,
+              size: file.size,
+              icon: fileIcon,
+              type: fileType,
+            });
+          }
+        } else {
+          // Create regular file row
+          const row = document.createElement("tr");
+          row.innerHTML = `
+                        <td>${fileIcon} ${fileType}</td>
+                        <td>${file.name}</td>
+                        <td><span class="badge bg-secondary">Pending</span></td>
+                        <td>${(file.size / 1024).toFixed(1)} KB</td>
+                    `;
+          fileList.appendChild(row);
+        }
+      }
+
+      // If using folder upload, show files grouped by folders
+      if (this.webkitdirectory && Object.keys(folderGroups).length > 0) {
+        // First add folder header rows
+        for (const folderName in folderGroups) {
+          const folderHeaderRow = document.createElement("tr");
+          folderHeaderRow.className = "table-primary";
+          folderHeaderRow.innerHTML = `
+                        <td colspan="4">
+                            <i class="fas fa-folder text-warning"></i> <strong>Folder: ${folderName}</strong> 
+                            (${folderGroups[folderName].length} files)
+                        </td>
+                    `;
+          fileList.appendChild(folderHeaderRow);
+
+          // Add each file in this folder
+          folderGroups[folderName].forEach((file) => {
+            const fileRow = document.createElement("tr");
+            fileRow.innerHTML = `
+                            <td>${file.icon} ${file.type}</td>
+                            <td>${file.name}</td>
+                            <td><span class="badge bg-secondary">Pending</span></td>
+                            <td>${(file.size / 1024).toFixed(1)} KB</td>
+                        `;
+            fileList.appendChild(fileRow);
+          });
+        }
+      }
+    } else {
+      fileCount.textContent = "0";
+    }
+  }
+
+  // Form submission handling
+  document.getElementById("uploadForm").addEventListener("submit", function () {
+    document.getElementById("submitBtn").disabled = true;
+    document.getElementById("submitBtn").innerHTML =
+      '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+  });
+</script>
+{% endblock %}
