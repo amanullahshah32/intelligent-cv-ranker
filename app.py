@@ -154,16 +154,29 @@ def internal_error(error):
 if __name__ == '__main__':
     logger.info("Starting Resume Ranker Application...")
     
-    # Download spaCy model if needed
+    # Ensure spaCy model is available without crashing startup
     try:
         import spacy
         try:
-            nlp = spacy.load("en_core_web_sm")
+            spacy.load("en_core_web_sm")
             logger.info("spaCy model already installed")
         except OSError:
-            logger.warning("Downloading spaCy English model...")
+            logger.warning("spaCy model not found. Trying to install en_core_web_sm...")
             import subprocess
-            subprocess.check_call([sys.executable, "-m", "spacy", "download", "en_core_web_sm"])
+            try:
+                subprocess.check_call([
+                    sys.executable,
+                    "-m",
+                    "pip",
+                    "install",
+                    "https://github.com/explosion/spacy-models/releases/download/"
+                    "en_core_web_sm-3.7.0/en_core_web_sm-3.7.0-py3-none-any.whl",
+                ])
+                spacy.load("en_core_web_sm")
+                logger.info("spaCy model installed successfully")
+            except Exception as e:
+                logger.warning(f"Could not install spaCy model at runtime: {str(e)}")
+                logger.warning("Continuing startup without forcing model download")
     except ImportError:
         logger.warning("spaCy not installed. NLP functionality may be limited.")
     
@@ -179,4 +192,5 @@ if __name__ == '__main__':
         logger.warning(f"Error with NLTK resources: {str(e)}")
     
     logger.info("Application ready. Starting Flask server...")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
